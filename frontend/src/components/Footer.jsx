@@ -148,7 +148,7 @@ const Footer = () => {
 
         {/* bottom copy right */}
         <div className={styles.copyright}>
-          <p>&copy; {new Date().getFullYear} KARZONE. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} KARZONE. All rights reserved.</p>
           <p className="mt-3 md:mt-0">
             Designed by{" "}
             <a href="" className={styles.designerLink}>
