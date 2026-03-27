@@ -1,21 +1,54 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
-import Contact from "./pages/Contact";
-import CarsPage from "./pages/CarsPage";
+import React, { useEffect, useState } from "react";
+import AppRoutes from "./routes/AppRoutes";
+import { useLocation } from "react-router-dom";
+import { FaArrowUp } from "react-icons/fa";
 
 const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<SignUp />} />
+  const [showButton, setShowButton] = useState(false);
+  const location = useLocation();
 
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/cars" element={<CarsPage />} />
-    </Routes>
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+  }, [location.pathname]);
+
+  // Show / Hide scroll button
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowButton(true);
+      } else {
+        setShowButton(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Scroll to top click
+  const scrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <>
+      <AppRoutes />
+
+      {/* Scroll to Top Button */}
+      {showButton && (
+        <button
+          onClick={scrollUp}
+          className="fixed z-50 bottom-8 right-8 p-3 rounded-full 
+          bg-gradient-to-r from-orange-600 to-orange-700
+          text-white shadow-lg hover:scale-110 transition-all duration-300"
+          aria-label="Scroll to top"
+        >
+          <FaArrowUp size={18} />
+        </button>
+      )}
+    </>
   );
 };
 
