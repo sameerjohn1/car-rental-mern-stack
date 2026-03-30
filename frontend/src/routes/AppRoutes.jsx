@@ -18,7 +18,7 @@ const AppRoutes = () => {
 
       <Route path="/cars" element={<CarsPage />} />
 
-      {/* 🔒 Protected */}
+      {/*Protected */}
       <Route
         path="/cars/:id"
         element={
