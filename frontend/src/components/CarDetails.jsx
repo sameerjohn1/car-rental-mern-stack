@@ -1,7 +1,209 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { carDetailStyles, carPageStyles } from "../assets/dummyStyles";
+import carsData from "../assets/HcarsData";
+import { toast, ToastContainer } from "react-toastify";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  FaArrowLeft,
+  FaCheckCircle,
+  FaGasPump,
+  FaTachometerAlt,
+  FaUserFriends,
+} from "react-icons/fa";
 
 const CarDetails = () => {
-  return <div>CarDetails</div>;
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+
+  const [today, setToday] = useState("");
+  useEffect(() => {
+    setToday(new Date().toISOString().split("T")[0]);
+  }, []);
+
+  // get car from router state or fallback to data
+  const car = location.state?.car || carsData.find((c) => String(c.id) === id);
+  if (!car) return <div className="p-4 text-white">Car not found.</div>;
+
+  // safe transmission label
+  const transmissionLabel = car.transmission
+    ? car.transmission.toLowerCase()
+    : "standard";
+
+  // carousel
+  const [currentImage, setCurrentImage] = useState(0);
+  const carImages = [car.image, ...(car.images || [])];
+
+  // booking form state
+  const initialForm = {
+    pickupDate: "",
+    returnDate: "",
+    pickupLocation: "",
+    name: "",
+    email: "",
+    phone: "",
+  };
+
+  const [formData, setFormData] = useState(initialForm);
+  const [activeField, setActiveField] = useState(null);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((fd) => ({
+      ...fd,
+      [name]: value,
+    }));
+  };
+
+  // calculate total
+  const calculateTotal = () => {
+    const { pickupDate, returnDate } = formData;
+    if (pickupDate && returnDate) {
+      const days = Math.max(
+        1,
+        Math.ceil(new Date(returnDate) - new Date(pickupDate)) /
+          (1000 * 60 * 60 * 24),
+      );
+
+      return days * car.price;
+    }
+    return car.price;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Booking Data:", formData);
+    toast.success("Booking confirmed!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+    setFormData(initialForm);
+  };
+
+  const handleFocus = (field) => {
+    setActiveFields(field);
+  };
+
+  const handleBlur = () => {
+    setActiveFields(null);
+  };
+
+  return (
+    <div className={carDetailStyles.pageContainer}>
+      {/* main content */}
+      <div className={carDetailStyles.contentContainer}>
+        <ToastContainer />
+
+        <button
+          onClick={() => navigate(-1)}
+          className={carDetailStyles.backButton}
+        >
+          <FaArrowLeft className={carDetailStyles.backButtonIcon} />
+        </button>
+
+        <div className={carDetailStyles.mainLayout}>
+          <div className={carDetailStyles.leftColumn}>
+            <div className={carDetailStyles.imageCarousel}>
+              <img
+                src={carImages[currentImage]}
+                alt={car.name}
+                className={carDetailStyles.carImage}
+              />
+              {carImages.length > 1 && (
+                <div className={carDetailStyles.carouselIndicators}>
+                  {carImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImage(idx)}
+                      className={carDetailStyles.carouselIndicator(
+                        idx === currentImage,
+                      )}
+                    ></button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <h1 className={carDetailStyles.carName}>{car.name}</h1>
+            <p className={carDetailStyles.carPrice}>
+              {car.price}{" "}
+              <span className={carDetailStyles.pricePerDay}>/ day</span>
+            </p>
+
+            <div className={carDetailStyles.specsGrid}>
+              {[
+                {
+                  Icon: FaUserFriends,
+                  label: "Seats",
+                  value: car.seats,
+                  color: "text-orange-400",
+                },
+                {
+                  Icon: FaGasPump,
+                  label: "Fuel",
+                  value: car.fuel,
+                  color: "text-green-400",
+                },
+                {
+                  Icon: FaTachometerAlt,
+                  label: "Mileage",
+                  value: car.mileage,
+                  color: "text-yellow-400",
+                },
+                {
+                  Icon: FaCheckCircle,
+                  label: "Transmission",
+                  value: transmissionLabel,
+                  color: "text-purple-400",
+                },
+              ].map((spec, idx) => (
+                <div key={idx} className={carDetailStyles.specCard}>
+                  <spec.Icon
+                    className={`${spec.color}  ${carDetailStyles.specIcon}`}
+                  />
+                  <p className={carDetailStyles.specLabel}>{spec.label}</p>
+                  <p className={carDetailStyles.specValue}>{spec.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* about sectoin */}
+            <div className={carDetailStyles.aboutSection}>
+              <h2 className={carDetailStyles.aboutTitle}>About this car</h2>
+              <p className={carDetailStyles.aboutText}>
+                Experience luxury in the {car.name}. With its{" "}
+                {transmissionLabel} transmission and seating for {car.seats},
+                every journey is exceptional
+              </p>
+              <p className={carDetailStyles.aboutText}>
+                {car.description ||
+                  "This car combines performance and comfort for an unforgettable drive."}
+              </p>
+            </div>
+          </div>
+
+          {/* right side */}
+          <div className={carDetailStyles.rightColumn}>
+            <div className={carDetailStyles.bookingCard}>
+              <h2 className={carDetailStyles.bookingTitle}>
+                Reserve{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-500">
+                  Your Drive
+                </span>
+              </h2>
+              <p className={carDetailStyles.bookingSubtitle}>
+                Fast &middot; Secure &middot; Easy
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default CarDetails;
