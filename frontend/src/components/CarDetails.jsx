@@ -91,11 +91,11 @@ const CarDetails = () => {
   };
 
   const handleFocus = (field) => {
-    setActiveFields(field);
+    setActiveField(field);
   };
 
   const handleBlur = () => {
-    setActiveFields(null);
+    setActiveField(null);
   };
 
   return (
