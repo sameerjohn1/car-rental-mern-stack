@@ -5,9 +5,15 @@ import { toast, ToastContainer } from "react-toastify";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   FaArrowLeft,
+  FaCalendarAlt,
   FaCheckCircle,
+  FaCreditCard,
+  FaEnvelope,
   FaGasPump,
+  FaMapMarkedAlt,
+  FaPhone,
   FaTachometerAlt,
+  FaUser,
   FaUserFriends,
 } from "react-icons/fa";
 
@@ -198,6 +204,201 @@ const CarDetails = () => {
               <p className={carDetailStyles.bookingSubtitle}>
                 Fast &middot; Secure &middot; Easy
               </p>
+
+              <form onSubmit={handleSubmit} className={carDetailStyles.form}>
+                <div className={carDetailStyles.grid2}>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="pickupDate"
+                      className={carDetailStyles.formLabel}
+                    >
+                      Pickup Date
+                    </label>
+                    <div
+                      className={carDetailStyles.inputContainer(
+                        activeField === "pickupDate",
+                      )}
+                    >
+                      <div className={carDetailStyles.inputIcon}>
+                        <FaCalendarAlt />
+                      </div>
+                      <input
+                        type="date"
+                        id="pickupDate"
+                        name="pickupDate"
+                        min={today}
+                        onChange={handleInputChange}
+                        onFocus={() => handleFocus("pickupDate")}
+                        onBlur={handleBlur}
+                        required
+                        className={carDetailStyles.inputField}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="returnDate"
+                      className={carDetailStyles.formLabel}
+                    >
+                      Return Date
+                    </label>
+                    <div
+                      className={carDetailStyles.inputContainer(
+                        activeField === "returnDate",
+                      )}
+                    >
+                      <div className={carDetailStyles.inputIcon}>
+                        <FaCalendarAlt />
+                      </div>
+                      <input
+                        type="date"
+                        id="returnDate"
+                        name="returnDate"
+                        min={formData.pickupDate || today}
+                        onChange={handleInputChange}
+                        onFocus={() => handleFocus("returnDate")}
+                        onBlur={handleBlur}
+                        required
+                        className={carDetailStyles.inputField}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={carDetailStyles.formLabel}>
+                    Pickup Location
+                  </label>
+                  <div
+                    className={carDetailStyles.inputContainer(
+                      activeField === "pickupLocation",
+                    )}
+                  >
+                    <div className={carDetailStyles.inputIcon}>
+                      <FaMapMarkedAlt />
+                    </div>
+                    <input
+                      type="text"
+                      name="pickupLocation"
+                      placeholder="Enter pickup location"
+                      value={formData.pickupLocation}
+                      onChange={handleInputChange}
+                      onFocus={() => handleFocus("pickupLocation")}
+                      onBlur={handleBlur}
+                      required
+                      className={carDetailStyles.textInputField}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={carDetailStyles.formLabel}>Full Name</label>
+                  <div
+                    className={carDetailStyles.inputContainer(
+                      activeField === "name",
+                    )}
+                  >
+                    <div className={carDetailStyles.inputIcon}>
+                      <FaUser />
+                    </div>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Your Full Name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      onFocus={() => handleFocus("name")}
+                      onBlur={handleBlur}
+                      required
+                      className={carDetailStyles.textInputField}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={carDetailStyles.formLabel}>
+                    Email Address
+                  </label>
+                  <div
+                    className={carDetailStyles.inputContainer(
+                      activeField === "email",
+                    )}
+                  >
+                    <div className={carDetailStyles.inputIcon}>
+                      <FaEnvelope />
+                    </div>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Your email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      onFocus={() => handleFocus("email")}
+                      onBlur={handleBlur}
+                      required
+                      className={carDetailStyles.textInputField}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={carDetailStyles.formLabel}>
+                    Phone Number
+                  </label>
+                  <div
+                    className={carDetailStyles.inputContainer(
+                      activeField === "phone",
+                    )}
+                  >
+                    <div className={carDetailStyles.inputIcon}>
+                      <FaPhone />
+                    </div>
+                    <input
+                      type="tel"
+                      name="phone"
+                      placeholder="Your Phone Number"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      onFocus={() => handleFocus("phone")}
+                      onBlur={handleBlur}
+                      required
+                      className={carDetailStyles.textInputField}
+                    />
+                  </div>
+                </div>
+
+                <div className={carDetailStyles.priceBreakdown}>
+                  <div className={carDetailStyles.priceRow}>
+                    <span>Rate/day</span>
+                    <span>{car.price}</span>
+                  </div>
+                  {formData.pickupDate && formData.returnDate && (
+                    <div className={carDetailStyles.priceRow}>
+                      <span>Days</span>
+                      <span>
+                        {Math.max(
+                          1,
+                          Math.ceil(
+                            (new Date(formData.returnDate) -
+                              new Date(formData.pickupDate)) /
+                              (1000 * 60 * 60 * 24),
+                          ),
+                        )}
+                      </span>
+                    </div>
+                  )}
+                  <div className={carDetailStyles.totalRow}>
+                    <span>Total</span>
+                    <span>{calculateTotal()}</span>
+                  </div>
+                </div>
+
+                <button type="submit" className={carDetailStyles.submitButton}>
+                  <FaCreditCard className="mr-2 group-hover:scale-110 transition-transform" />
+                  <span>Confirm Booking</span>
+                </button>
+              </form>
             </div>
           </div>
         </div>
